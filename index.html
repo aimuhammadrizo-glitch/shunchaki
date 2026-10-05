@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>RIZO CRAFT - 20K Ultra Pro Edition</title>
+  <link rel="stylesheet" href="styles.css?v=20k_ultra_pro">
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas Container -->
+  <div id="game-canvas-container"></div>
+
+  <!-- Cursor item follower in inventory -->
+  <div id="cursor-held-item" class="inv-slot cursor-follower"></div>
+
+  <!-- Deluxe Item Tooltip Follower -->
+  <div id="item-tooltip" class="mc-tooltip"></div>
+
+  <!-- ==========================================================================
+       1. TITLE / MAIN MENU SCREEN (20K ULTRA PRO)
+       ========================================================================== -->
+  <div id="title-screen">
+    <div class="title-banner">
+      <h1 class="title-main">RIZO CRAFT</h1>
+      <span class="title-sub">20K ULTRA PRO EDITION</span>
+      <div class="splash-text">★ 20K ULTRA HD EDITION ★</div>
+    </div>
+
+    <div class="menu-buttons">
+      <button id="btn-play-singleplayer" class="mc-btn primary">O'yinni Boshlash (Singleplayer)</button>
+      <button id="btn-options" class="mc-btn">Sozlamalar (Options)</button>
+      <button id="btn-controls" class="mc-btn">Boshqaruv (Controls)</button>
+    </div>
+
+    <div class="footer-credits">
+      RIZO CRAFT v1.0.0 &bull; 20K Ultra Shaders & Procedural Voxel Engine &bull; PC Edition
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       2. IN-GAME HUD
+       ========================================================================== -->
+  <div id="game-hud">
+    <!-- Crosshair -->
+    <div id="crosshair"></div>
+
+    <!-- F3 Debug Overlay -->
+    <div id="f3-overlay"></div>
+
+    <!-- Toast / Notification Center -->
+    <div id="toast-container"></div>
+
+    <!-- Chat & Command Terminal -->
+    <div id="chat-container">
+      <div id="chat-messages"></div>
+      <input type="text" id="chat-input" placeholder="Buyruq yoki AI ga xabar yozing (masalan: menga olmos ber, /gamemode creative)..." autocomplete="off" />
+    </div>
+
+    <!-- Status & Hotbar Container -->
+    <div id="hotbar-container">
+      <div class="status-bars">
+        <div class="hearts-bar">
+          <div class="heart-icon"></div><div class="heart-icon"></div><div class="heart-icon"></div>
+          <div class="heart-icon"></div><div class="heart-icon"></div><div class="heart-icon"></div>
+          <div class="heart-icon"></div><div class="heart-icon"></div><div class="heart-icon"></div>
+          <div class="heart-icon"></div>
+        </div>
+        <div class="hunger-bar">
+          <div class="drumstick-icon"></div><div class="drumstick-icon"></div><div class="drumstick-icon"></div>
+          <div class="drumstick-icon"></div><div class="drumstick-icon"></div><div class="drumstick-icon"></div>
+          <div class="drumstick-icon"></div><div class="drumstick-icon"></div><div class="drumstick-icon"></div>
+          <div class="drumstick-icon"></div>
+        </div>
+      </div>
+
+      <!-- Experience Bar -->
+      <div class="xp-container">
+        <span class="xp-level">30</span>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+      </div>
+
+      <!-- 9 Hotbar Slots -->
+      <div id="hotbar"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       3. INVENTORY & 2X2 CRAFTING MODAL (E KEY)
+       ========================================================================== -->
+  <div id="inventory-modal" class="modal-overlay">
+    <div class="modal-window inv-modal-window">
+      <div class="modal-header">
+        <div class="inv-title-group">
+          <h2>INVENTAR & CRAFTING</h2>
+          <span class="inv-subtitle">20K Ultra Pro Deluxe Storage</span>
+        </div>
+        
+        <!-- Quick Action Toolbar -->
+        <div class="inv-action-toolbar">
+          <button id="btn-inv-sort" class="inv-tool-btn" title="Inventarni tartibga solish va yig'ish">🔄 Tartiblash</button>
+          <button id="btn-kit-warrior" class="inv-tool-btn kit-btn" title="Olmos Qilich, Cho'kich, TNT to'plami">⚔️ Jangchi</button>
+          <button id="btn-kit-builder" class="inv-tool-btn kit-btn" title="Taxta, G'isht, Shisha, Yog'och to'plami">🏗️ Quruvchi</button>
+          <button id="btn-kit-miner" class="inv-tool-btn kit-btn" title="Olmos cho'kich, barcha ma'danlar to'plami">⛏️ Konchi</button>
+          <button id="btn-inv-clear" class="inv-tool-btn clear-btn" title="Inventarni tozalash">🧹 Tozalash</button>
+          <button id="btn-close-inv" class="close-btn">&times;</button>
+        </div>
+      </div>
+
+      <div class="inv-main-content">
+        <!-- Left Side: Player 2x2 Crafting & Inventory Storage -->
+        <div class="inv-left-section">
+          <!-- 2x2 Crafting Box -->
+          <div class="crafting-2x2-box">
+            <div class="section-label">2x2 Crafting (Kichik Yasash):</div>
+            <div class="craft-area">
+              <div id="player-craft-grid" class="craft-grid-2x2"></div>
+              <div class="craft-arrow">&rarr;</div>
+              <div id="player-craft-output" class="craft-output-box"></div>
+            </div>
+          </div>
+
+          <!-- 27 Main Inventory Slots -->
+          <div class="inv-storage-box">
+            <div class="section-label">📦 Asosiy Inventar (27 Slot):</div>
+            <div id="inv-slots-grid" class="inv-grid"></div>
+          </div>
+
+          <!-- 9 Hotbar Slots in Inv -->
+          <div class="inv-hotbar-box">
+            <div class="section-label">⚡ Tezkor Panel / Hotbar (1-9):</div>
+            <div id="inv-hotbar-grid" class="inv-grid"></div>
+          </div>
+        </div>
+
+        <!-- Right Side: Creative Palette & Search -->
+        <div class="inv-right-section">
+          <div class="palette-header">
+            <div class="section-label">✨ Barcha Bloklar & Resurslar:</div>
+            <input type="text" id="palette-search-input" placeholder="Qidirish (olmos, tnt, qilich, tosh)..." autocomplete="off" />
+          </div>
+
+          <!-- Category Filter Tabs -->
+          <div class="palette-categories">
+            <button class="palette-tab-btn active" data-category="all">Barchasi</button>
+            <button class="palette-tab-btn" data-category="building">Qurilish</button>
+            <button class="palette-tab-btn" data-category="tools">Qurollar</button>
+            <button class="palette-tab-btn" data-category="ores">Ma'danlar</button>
+            <button class="palette-tab-btn" data-category="special">Maxsus</button>
+          </div>
+
+          <div class="creative-palette-container">
+            <div id="creative-palette-grid" class="creative-palette-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       4. WORKBENCH 3X3 CRAFTING MODAL
+       ========================================================================== -->
+  <div id="crafting-table-modal" class="modal-overlay">
+    <div class="modal-window ct-modal-window">
+      <div class="modal-header">
+        <div class="inv-title-group">
+          <h2>CRAFTING TABLE (3x3)</h2>
+          <span class="inv-subtitle">Katta Ish Stoli &bull; Barcha Retseptlar</span>
+        </div>
+        <button id="btn-close-ct" class="close-btn">&times;</button>
+      </div>
+
+      <!-- 3x3 Crafting Grid -->
+      <div class="crafting-3x3-box">
+        <div class="section-label">3x3 Retsept Maydoni:</div>
+        <div class="craft-area">
+          <div id="ct-craft-grid" class="craft-grid-3x3"></div>
+          <div class="craft-arrow">&rarr;</div>
+          <div id="ct-craft-output" class="craft-output-box"></div>
+        </div>
+      </div>
+
+      <!-- 27 Inventory Slots -->
+      <div class="inv-storage-box">
+        <div class="section-label">📦 Inventar:</div>
+        <div id="ct-inv-slots-grid" class="inv-grid"></div>
+      </div>
+
+      <!-- 9 Hotbar Slots -->
+      <div class="inv-hotbar-box">
+        <div class="section-label">⚡ Tezkor Panel (Hotbar):</div>
+        <div id="ct-inv-hotbar-grid" class="inv-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       5. PAUSE MENU (ESC)
+       ========================================================================== -->
+  <div id="pause-menu" class="modal-overlay">
+    <div class="modal-window" style="width: 380px; text-align: center;">
+      <h2 style="color: #ffcc00;">O'YIN TO'XTATILDI</h2>
+      <button id="btn-resume-game" class="mc-btn primary">O'yinni Davom Ettirish</button>
+      <button id="btn-save-quit" class="mc-btn">Saqlash va Chiqish (Quit)</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       6. SETTINGS MODAL
+       ========================================================================== -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>GRAFIKA VA SOZLAMALAR</h2>
+        <button id="btn-close-settings" class="close-btn">&times;</button>
+      </div>
+      <div class="settings-grid">
+        <div class="setting-row">
+          <label for="setting-fov">Ko'rish burchagi (FOV): <span id="fov-val">75</span>&deg;</label>
+          <input type="range" id="setting-fov" min="60" max="110" value="75" />
+        </div>
+        <div class="setting-row">
+          <label for="setting-volume">Ovoz balandligi (Volume): <span id="volume-val">70%</span></label>
+          <input type="range" id="setting-volume" min="0" max="1" step="0.05" value="0.7" />
+        </div>
+        <div class="setting-row">
+          <label for="setting-gamemode">O'yin rejimi (Game Mode):</label>
+          <select id="setting-gamemode" style="background: rgba(20, 25, 40, 0.9); border: 1.5px solid #88c0d0; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; outline: none;">
+            <option value="survival" style="background: #141928; color: #fff;">Omon qolish (Survival / Jonlik)</option>
+            <option value="creative" style="background: #141928; color: #fff;">Ijodiy (Creative / Faqat shu yerda uchish)</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>20K Ultra Shaders:</label>
+          <span style="color: #55ff55; font-weight: bold;">Yoniq (Bloom, SSAO, Water)</span>
+        </div>
+        <div class="setting-row">
+          <label>Render Sifati:</label>
+          <span style="color: #00ffff; font-weight: bold;">20K Ultra HDR</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       7. CONTROLS MODAL
+       ========================================================================== -->
+  <div id="controls-modal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>BOSHQARUV TUGMALARI</h2>
+        <button id="btn-close-controls" class="close-btn">&times;</button>
+      </div>
+      <div class="controls-list">
+        <div class="control-item"><span>Yurish / Harakat:</span> <span class="key-badge">W, A, S, D</span></div>
+        <div class="control-item"><span>Sakrash / Tepaga:</span> <span class="key-badge">SPACE</span></div>
+        <div class="control-item"><span>Uchish rejimi (Creative):</span> <span class="key-badge">2x SPACE</span></div>
+        <div class="control-item"><span>O'tirish / Pastga:</span> <span class="key-badge">SHIFT</span></div>
+        <div class="control-item"><span>Yugurish (Sprint):</span> <span class="key-badge">CTRL</span></div>
+        <div class="control-item"><span>Blokni qazish / Urish:</span> <span class="key-badge">Chap Bosish (L-Click)</span></div>
+        <div class="control-item"><span>Blok qo'yish / Ishlatish:</span> <span class="key-badge">O'ng Bosish (R-Click)</span></div>
+        <div class="control-item"><span>Blokni tanlab olish:</span> <span class="key-badge">O'rta Bosish (M-Click)</span></div>
+        <div class="control-item"><span>Buyumni tashlash (Drop):</span> <span class="key-badge">Q (yoki Ctrl+Q)</span></div>
+        <div class="control-item"><span>Inventar & Crafting:</span> <span class="key-badge">E</span></div>
+        <div class="control-item"><span>Tezkor almashtirish (Hover):</span> <span class="key-badge">1 - 9</span></div>
+        <div class="control-item"><span>Tezkor ko'chirish / Craft:</span> <span class="key-badge">Shift + Click</span></div>
+        <div class="control-item"><span>Chat / Buyruqlar / AI Bot:</span> <span class="key-badge">T yoki /</span></div>
+        <div class="control-item"><span>F3 Debug & FPS ekrani:</span> <span class="key-badge">F3</span></div>
+        <div class="control-item"><span>To'xtatish (Pause):</span> <span class="key-badge">ESC</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts with cache busting query params -->
+  <script src="js/three.min.js"></script>
+  <script src="js/simplex-noise.js"></script>
+  <script src="js/textures.js?v=20k_pro_v2"></script>
+  <script src="js/audio.js?v=20k_pro_v2"></script>
+  <script src="js/shaders.js?v=20k_pro_v2"></script>
+  <script src="js/world.js?v=20k_pro_v2"></script>
+  <script src="js/player.js?v=20k_pro_v2"></script>
+  <script src="js/inventory.js?v=20k_pro_v2"></script>
+  <script src="js/ui.js?v=20k_pro_v2"></script>
+  <script src="js/main.js?v=20k_pro_v2"></script>
+
+</body>
+</html>
